@@ -50,48 +50,6 @@ const VotePage = () => {
     return null;
   }
 
-  if (!votingOpen) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center p-8">
-            <Lock className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-2xl font-display font-bold text-foreground mb-2">Voting is Closed</h2>
-            <p className="text-muted-foreground">The voting period has ended. Results will be announced soon.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const headgirlCandidates = candidates.filter(c => c.position === "headgirl");
-  const headboyCandidates = candidates.filter(c => c.position === "headboy");
-  const prefectCandidates = candidates.filter(c => c.position === "prefect");
-
-  const selectHeadgirl = (id: string) => setVotes({ ...votes, headgirl: votes.headgirl === id ? null : id });
-  const selectHeadboy = (id: string) => setVotes({ ...votes, headboy: votes.headboy === id ? null : id });
-  const togglePrefect = (id: string) => {
-    const current = votes.prefects;
-    if (current.includes(id)) {
-      setVotes({ ...votes, prefects: current.filter(p => p !== id) });
-    } else if (current.length < 4) {
-      setVotes({ ...votes, prefects: [...current, id] });
-    }
-  };
-
-  const canSubmit = votes.headgirl && votes.headboy && votes.prefects.length > 0;
-
-  const selectedHeadgirl = candidates.find(c => c.id === votes.headgirl);
-  const selectedHeadboy = candidates.find(c => c.id === votes.headboy);
-  const selectedPrefects = candidates.filter(c => votes.prefects.includes(c.id));
-
-  const handleConfirmSubmit = () => {
-    submitVote();
-    setShowConfirm(false);
-    navigate("/confirmation");
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />

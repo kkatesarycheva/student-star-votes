@@ -17,10 +17,6 @@ const Confirmation = () => {
   if (!isLoggedIn) { navigate("/login"); return null; }
   if (!hasVoted) { navigate("/vote"); return null; }
 
-  const selectedHeadgirl = candidates.find(c => c.id === votes.headgirl);
-  const selectedHeadboy = candidates.find(c => c.id === votes.headboy);
-  const selectedPrefects = candidates.filter(c => votes.prefects.includes(c.id));
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
