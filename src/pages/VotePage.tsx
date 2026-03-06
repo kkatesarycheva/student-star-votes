@@ -13,6 +13,33 @@ const VotePage = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
 
+  const headgirlCandidates = candidates.filter(c => c.position === "headgirl");
+  const headboyCandidates = candidates.filter(c => c.position === "headboy");
+  const prefectCandidates = candidates.filter(c => c.position === "prefect");
+
+  const selectHeadgirl = (id: string) => setVotes({ ...votes, headgirl: votes.headgirl === id ? null : id });
+  const selectHeadboy = (id: string) => setVotes({ ...votes, headboy: votes.headboy === id ? null : id });
+  const togglePrefect = (id: string) => {
+    const current = votes.prefects;
+    if (current.includes(id)) {
+      setVotes({ ...votes, prefects: current.filter(p => p !== id) });
+    } else if (current.length < 4) {
+      setVotes({ ...votes, prefects: [...current, id] });
+    }
+  };
+
+  const canSubmit = votes.headgirl && votes.headboy && votes.prefects.length > 0;
+
+  const selectedHeadgirl = candidates.find(c => c.id === votes.headgirl);
+  const selectedHeadboy = candidates.find(c => c.id === votes.headboy);
+  const selectedPrefects = candidates.filter(c => votes.prefects.includes(c.id));
+
+  const handleConfirmSubmit = () => {
+    submitVote();
+    setShowConfirm(false);
+    navigate("/confirmation");
+  };
+
   if (!isLoggedIn) {
     navigate("/login");
     return null;

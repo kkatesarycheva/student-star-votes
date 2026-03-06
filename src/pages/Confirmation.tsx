@@ -10,6 +10,10 @@ const Confirmation = () => {
   const { isLoggedIn, hasVoted, votes } = useElection();
   const navigate = useNavigate();
 
+  const selectedHeadgirl = candidates.find(c => c.id === votes.headgirl);
+  const selectedHeadboy = candidates.find(c => c.id === votes.headboy);
+  const selectedPrefects = candidates.filter(c => votes.prefects.includes(c.id));
+
   if (!isLoggedIn) { navigate("/login"); return null; }
   if (!hasVoted) { navigate("/vote"); return null; }
 
