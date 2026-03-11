@@ -33,7 +33,7 @@ const Index = () => {
               <span className="text-gradient-gold">Elections 2026</span>
             </h1>
             <p className="text-primary-foreground/70 text-lg md:text-xl font-body mb-8 max-w-lg mx-auto">
-              Teachers — cast your vote to help shape the next generation of school leaders.
+              Teachers — cast your vote to help shape the next generation of ESK leaders.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link to="/login">
