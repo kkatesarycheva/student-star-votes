@@ -61,7 +61,7 @@ const Index = () => {
             {[
               { icon: Shield, title: "Secure & Private", desc: "All votes are confidential and securely stored. Your choices remain anonymous." },
               { icon: Vote, title: "One Vote Per Teacher", desc: "Each teacher may vote once. Votes cannot be changed after submission." },
-              { icon: CheckCircle, title: "Three Categories", desc: "Vote for Head Girl, Head Boy, and up to 4 Prefects from the candidate list." },
+              { icon: CheckCircle, title: "Three Categories", desc: "Vote for Head Girl, Head Boy, and up to 10 Prefects from the candidate list." },
             ].map((rule) => (
               <div key={rule.title} className="bg-card border border-border rounded-lg p-6 shadow-card text-center">
                 <div className="w-12 h-12 rounded-full bg-gold-light flex items-center justify-center mx-auto mb-4">
