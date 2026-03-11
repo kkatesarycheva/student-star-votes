@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Shield, Vote, Users, CalendarDays, CheckCircle, Clock } from "lucide-react";
+import eskBg from "@/assets/esk-bg.jpg";
 import Header from "@/components/Header";
 
 const timelineSteps = [
