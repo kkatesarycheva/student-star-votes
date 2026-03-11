@@ -1,21 +1,24 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useElection } from "@/lib/electionContext";
-import { candidates, positionLabels } from "@/lib/mockData";
+import { candidates } from "@/lib/mockData";
 import CandidateCard from "@/components/CandidateCard";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Vote, AlertTriangle, CheckCircle, Lock } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Vote, AlertTriangle, CheckCircle, Search } from "lucide-react";
 
 const VotePage = () => {
   const { isLoggedIn, hasVoted, votingOpen, votes, setVotes, submitVote } = useElection();
   const [showConfirm, setShowConfirm] = useState(false);
+  const [searchHG, setSearchHG] = useState("");
+  const [searchHB, setSearchHB] = useState("");
+  const [searchPrefect, setSearchPrefect] = useState("");
   const navigate = useNavigate();
 
-  const headgirlCandidates = candidates.filter(c => c.position === "headgirl");
-  const headboyCandidates = candidates.filter(c => c.position === "headboy");
-  const prefectCandidates = candidates.filter(c => c.position === "prefect");
+  const filterCandidates = (search: string) =>
+    candidates.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
 
   const selectHeadgirl = (id: string) => setVotes({ ...votes, headgirl: votes.headgirl === id ? null : id });
   const selectHeadboy = (id: string) => setVotes({ ...votes, headboy: votes.headboy === id ? null : id });
@@ -50,6 +53,13 @@ const VotePage = () => {
     return null;
   }
 
+  const SearchInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) => (
+    <div className="relative mb-3">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+      <Input className="pl-9" placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)} />
+    </div>
+  );
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -65,8 +75,9 @@ const VotePage = () => {
             <span className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-sm">👑</span>
             Head Girl <span className="text-sm font-body font-normal text-muted-foreground">(select one)</span>
           </h2>
-          <div className="space-y-3">
-            {headgirlCandidates.map(c => (
+          <SearchInput value={searchHG} onChange={setSearchHG} placeholder="Search candidates..." />
+          <div className="space-y-2 max-h-80 overflow-y-auto">
+            {filterCandidates(searchHG).map(c => (
               <CandidateCard key={c.id} candidate={c} selected={votes.headgirl === c.id} onSelect={() => selectHeadgirl(c.id)} selectable />
             ))}
           </div>
@@ -78,8 +89,9 @@ const VotePage = () => {
             <span className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-sm">🎓</span>
             Head Boy <span className="text-sm font-body font-normal text-muted-foreground">(select one)</span>
           </h2>
-          <div className="space-y-3">
-            {headboyCandidates.map(c => (
+          <SearchInput value={searchHB} onChange={setSearchHB} placeholder="Search candidates..." />
+          <div className="space-y-2 max-h-80 overflow-y-auto">
+            {filterCandidates(searchHB).map(c => (
               <CandidateCard key={c.id} candidate={c} selected={votes.headboy === c.id} onSelect={() => selectHeadboy(c.id)} selectable />
             ))}
           </div>
@@ -91,8 +103,9 @@ const VotePage = () => {
             <span className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-sm">⭐</span>
             Prefects <span className="text-sm font-body font-normal text-muted-foreground">(select up to 4) — {votes.prefects.length}/4 selected</span>
           </h2>
-          <div className="space-y-3">
-            {prefectCandidates.map(c => (
+          <SearchInput value={searchPrefect} onChange={setSearchPrefect} placeholder="Search candidates..." />
+          <div className="space-y-2 max-h-80 overflow-y-auto">
+            {filterCandidates(searchPrefect).map(c => (
               <CandidateCard key={c.id} candidate={c} selected={votes.prefects.includes(c.id)} onSelect={() => togglePrefect(c.id)} selectable />
             ))}
           </div>
