@@ -166,10 +166,9 @@ const AdminDashboard = () => {
               <h3 className="font-display font-semibold text-foreground mb-4">Current Candidates</h3>
               <div className="divide-y divide-border">
                 {candidates.map(c => (
-                  <div key={c.id} className="flex items-center justify-between py-3">
+                    <div key={c.id} className="flex items-center justify-between py-3">
                     <div>
                       <p className="font-medium text-foreground">{c.name}</p>
-                      <p className="text-sm text-muted-foreground">{positionLabels[c.position]} • {c.year}</p>
                     </div>
                     <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">Remove</Button>
                   </div>
