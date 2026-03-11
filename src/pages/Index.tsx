@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Shield, Vote, Users, CalendarDays, CheckCircle, Clock } from "lucide-react";
+import eskBg from "@/assets/esk-bg.jpg";
 import Header from "@/components/Header";
 
 const timelineSteps = [
@@ -16,8 +17,11 @@ const Index = () => {
       <Header />
 
       {/* Hero */}
-      <section className="bg-gradient-navy relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(45_80%_55%/0.08),transparent_60%)]" />
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img src={eskBg} alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_60%_12%/0.75)] via-[hsl(220_60%_15%/0.7)] to-[hsl(220_60%_12%/0.85)]" />
+        </div>
         <div className="container mx-auto px-4 py-20 md:py-28 relative">
           <div className="max-w-2xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-primary-foreground/10 border border-primary-foreground/15 rounded-full px-4 py-1.5 mb-6">
