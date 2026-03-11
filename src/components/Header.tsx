@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useElection } from "@/lib/electionContext";
 import { Button } from "@/components/ui/button";
 import { LogOut, Shield, Vote, Users, Home } from "lucide-react";
+import eskLogo from "@/assets/esk.png";
 
 const Header = () => {
   const { isLoggedIn, isAdmin, teacherName, logout } = useElection();
