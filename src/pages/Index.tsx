@@ -78,7 +78,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-display font-bold text-center mb-12">Voting Timeline</h2>
           <div className="max-w-3xl mx-auto">
-            <div className="grid sm:grid-cols-4 gap-4">
+            <div className="grid sm:grid-cols-2 gap-4 max-w-xl mx-auto">
               {timelineSteps.map((step, i) =>
               <div key={step.label} className={`relative flex flex-col items-center text-center p-4 rounded-lg border ${
               step.active ? "bg-gold-light/40 border-accent shadow-gold" : step.done ? "bg-card border-border" : "bg-card border-border opacity-60"}`
