@@ -10,6 +10,7 @@ import Candidates from "./pages/Candidates";
 import VotePage from "./pages/VotePage";
 import Confirmation from "./pages/Confirmation";
 import AdminDashboard from "./pages/AdminDashboard";
+import ITAdminDashboard from "./pages/ITAdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/vote" element={<VotePage />} />
             <Route path="/confirmation" element={<Confirmation />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/it-admin" element={<ITAdminDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
