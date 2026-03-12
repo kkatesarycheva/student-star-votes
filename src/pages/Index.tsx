@@ -5,11 +5,11 @@ import eskBg from "@/assets/esk-bg.jpg";
 import Header from "@/components/Header";
 
 const timelineSteps = [
-  { icon: Users, label: "Nominations Open", date: "1st March", done: true },
-  { icon: CalendarDays, label: "Campaigning Week", date: "3rd – 7th March", done: true },
-  { icon: Vote, label: "Voting Period", date: "8th – 12th March", done: false, active: true },
-  { icon: CheckCircle, label: "Results Announced", date: "14th March", done: false },
-];
+{ icon: Users, label: "Nominations Open", date: "1st March", done: true },
+{ icon: CalendarDays, label: "Campaigning Week", date: "3rd – 7th March", done: true },
+{ icon: Vote, label: "Voting Period", date: "8th – 12th March", done: false, active: true },
+{ icon: CheckCircle, label: "Results Announced", date: "14th March", done: false }];
+
 
 const Index = () => {
   return (
@@ -59,18 +59,18 @@ const Index = () => {
           <p className="text-muted-foreground text-center mb-12 max-w-md mx-auto">Please review the rules before casting your vote.</p>
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
-              { icon: Shield, title: "Secure & Private", desc: "All votes are confidential and securely stored. Your choices remain anonymous." },
-              { icon: Vote, title: "One Vote Per Teacher", desc: "Each teacher may vote once. Votes cannot be changed after submission." },
-              { icon: CheckCircle, title: "Three Categories", desc: "Vote for Head Girl, Head Boy, and up to 10 Prefects from the candidate list." },
-            ].map((rule) => (
-              <div key={rule.title} className="bg-card border border-border rounded-lg p-6 shadow-card text-center">
+            { icon: Shield, title: "Secure & Private", desc: "All votes are confidential and securely stored. Your choices remain anonymous." },
+            { icon: Vote, title: "One Vote Per Teacher", desc: "Each teacher may vote once. Votes cannot be changed after submission." },
+            { icon: CheckCircle, title: "Three Categories", desc: "Vote for Head Girl, Head Boy, and up to 10 Prefects from the candidate list." }].
+            map((rule) =>
+            <div key={rule.title} className="bg-card border border-border rounded-lg p-6 shadow-card text-center">
                 <div className="w-12 h-12 rounded-full bg-gold-light flex items-center justify-center mx-auto mb-4">
                   <rule.icon className="w-6 h-6 text-accent-foreground" />
                 </div>
                 <h3 className="font-display font-semibold text-card-foreground mb-2">{rule.title}</h3>
                 <p className="text-sm text-muted-foreground">{rule.desc}</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -81,25 +81,25 @@ const Index = () => {
           <h2 className="text-2xl md:text-3xl font-display font-bold text-center mb-12">Voting Timeline</h2>
           <div className="max-w-3xl mx-auto">
             <div className="grid sm:grid-cols-4 gap-4">
-              {timelineSteps.map((step, i) => (
-                <div key={step.label} className={`relative flex flex-col items-center text-center p-4 rounded-lg border ${
-                  step.active ? "bg-gold-light/40 border-accent shadow-gold" : step.done ? "bg-card border-border" : "bg-card border-border opacity-60"
-                }`}>
+              {timelineSteps.map((step, i) =>
+              <div key={step.label} className={`relative flex flex-col items-center text-center p-4 rounded-lg border ${
+              step.active ? "bg-gold-light/40 border-accent shadow-gold" : step.done ? "bg-card border-border" : "bg-card border-border opacity-60"}`
+              }>
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-3 ${
-                    step.active ? "bg-gradient-gold" : step.done ? "bg-success" : "bg-muted"
-                  }`}>
-                    {step.done ? (
-                      <CheckCircle className="w-5 h-5 text-success-foreground" />
-                    ) : step.active ? (
-                      <Clock className="w-5 h-5 text-secondary-foreground" />
-                    ) : (
-                      <step.icon className="w-5 h-5 text-muted-foreground" />
-                    )}
+                step.active ? "bg-gradient-gold" : step.done ? "bg-success" : "bg-muted"}`
+                }>
+                    {step.done ?
+                  <CheckCircle className="w-5 h-5 text-success-foreground" /> :
+                  step.active ?
+                  <Clock className="w-5 h-5 text-secondary-foreground" /> :
+
+                  <step.icon className="w-5 h-5 text-muted-foreground" />
+                  }
                   </div>
                   <h4 className="font-body font-semibold text-sm text-card-foreground mb-1">{step.label}</h4>
                   <span className="text-xs text-muted-foreground">{step.date}</span>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -108,13 +108,13 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-gradient-navy mt-auto py-6">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-primary-foreground/50 text-sm font-body">
-            © 2026 School Elections • Confidential Voting System
-          </p>
+          
+
+          
         </div>
       </footer>
-    </div>
-  );
+    </div>);
+
 };
 
 export default Index;
