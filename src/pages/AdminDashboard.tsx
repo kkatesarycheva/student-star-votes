@@ -17,7 +17,7 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [newCandidate, setNewCandidate] = useState({ name: "", position: "", year: "", statement: "" });
 
-  if (!isLoggedIn || !isAdmin) { navigate("/login"); return null; }
+  if (!isLoggedIn || !isAdmin) {navigate("/login");return null;}
 
   const totalVoters = 54;
   const votedCount = 42;
@@ -25,9 +25,9 @@ const AdminDashboard = () => {
   const exportCSV = () => {
     const rows = [["Position", "Name", "Votes"]];
     Object.entries(mockResults).forEach(([pos, results]) => {
-      results.forEach(r => rows.push([positionLabels[pos] || pos, r.name, String(r.votes)]));
+      results.forEach((r) => rows.push([positionLabels[pos] || pos, r.name, String(r.votes)]));
     });
-    const csv = rows.map(r => r.join(",")).join("\n");
+    const csv = rows.map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -37,33 +37,33 @@ const AdminDashboard = () => {
     URL.revokeObjectURL(url);
   };
 
-  const ResultSection = ({ title, icon: Icon, results, color }: { title: string; icon: React.ElementType; results: { name: string; votes: number }[]; color: string }) => {
-    const maxVotes = Math.max(...results.map(r => r.votes));
+  const ResultSection = ({ title, icon: Icon, results, color }: {title: string;icon: React.ElementType;results: {name: string;votes: number;}[];color: string;}) => {
+    const maxVotes = Math.max(...results.map((r) => r.votes));
     return (
       <div className="bg-card border border-border rounded-xl p-6 shadow-card">
         <h3 className="font-display font-semibold text-foreground flex items-center gap-2 mb-4">
-          <Icon className={`w-5 h-5 ${color}`} />
+          
           {title}
         </h3>
         <div className="space-y-3">
-          {results.map((r, i) => (
-            <div key={r.name} className="flex items-center gap-3">
+          {results.map((r, i) =>
+          <div key={r.name} className="flex items-center gap-3">
               <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                i === 0 ? "bg-gradient-gold text-secondary-foreground" : "bg-muted text-muted-foreground"
-              }`}>{i + 1}</span>
+            i === 0 ? "bg-gradient-gold text-secondary-foreground" : "bg-muted text-muted-foreground"}`
+            }>{i + 1}</span>
               <div className="flex-1">
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-sm font-medium text-foreground">{r.name}</span>
                   <span className="text-sm font-bold text-foreground">{r.votes}</span>
                 </div>
-                <Progress value={(r.votes / maxVotes) * 100} className="h-2" />
+                <Progress value={r.votes / maxVotes * 100} className="h-2" />
               </div>
               {i === 0 && <Trophy className="w-4 h-4 text-accent" />}
             </div>
-          ))}
+          )}
         </div>
-      </div>
-    );
+      </div>);
+
   };
 
   return (
@@ -89,19 +89,19 @@ const AdminDashboard = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Total Teachers", value: totalVoters, icon: Users },
-            { label: "Votes Cast", value: votedCount, icon: Vote },
-            { label: "Turnout", value: `${Math.round((votedCount / totalVoters) * 100)}%`, icon: BarChart },
-            { label: "Candidates", value: candidates.length, icon: Star },
-          ].map(s => (
-            <div key={s.label} className="bg-card border border-border rounded-xl p-4 shadow-card">
+          { label: "Total Teachers", value: totalVoters, icon: Users },
+          { label: "Votes Cast", value: votedCount, icon: Vote },
+          { label: "Turnout", value: `${Math.round(votedCount / totalVoters * 100)}%`, icon: BarChart },
+          { label: "Candidates", value: candidates.length, icon: Star }].
+          map((s) =>
+          <div key={s.label} className="bg-card border border-border rounded-xl p-4 shadow-card">
               <div className="flex items-center gap-2 mb-1">
                 <s.icon className="w-4 h-4 text-muted-foreground" />
                 <span className="text-xs text-muted-foreground font-medium">{s.label}</span>
               </div>
               <p className="text-2xl font-display font-bold text-foreground">{s.value}</p>
             </div>
-          ))}
+          )}
         </div>
 
         <Tabs defaultValue="results" className="space-y-6">
@@ -134,11 +134,11 @@ const AdminDashboard = () => {
               <div className="grid sm:grid-cols-2 gap-4 mb-4">
                 <div>
                   <Label className="text-card-foreground">Name</Label>
-                  <Input className="mt-1" placeholder="Student name" value={newCandidate.name} onChange={e => setNewCandidate({ ...newCandidate, name: e.target.value })} />
+                  <Input className="mt-1" placeholder="Student name" value={newCandidate.name} onChange={(e) => setNewCandidate({ ...newCandidate, name: e.target.value })} />
                 </div>
                 <div>
                   <Label className="text-card-foreground">Position</Label>
-                  <Select value={newCandidate.position} onValueChange={v => setNewCandidate({ ...newCandidate, position: v })}>
+                  <Select value={newCandidate.position} onValueChange={(v) => setNewCandidate({ ...newCandidate, position: v })}>
                     <SelectTrigger className="mt-1"><SelectValue placeholder="Select position" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="headgirl">Head Girl</SelectItem>
@@ -149,11 +149,11 @@ const AdminDashboard = () => {
                 </div>
                 <div>
                   <Label className="text-card-foreground">Year Group</Label>
-                  <Input className="mt-1" placeholder="e.g. Year 13" value={newCandidate.year} onChange={e => setNewCandidate({ ...newCandidate, year: e.target.value })} />
+                  <Input className="mt-1" placeholder="e.g. Year 13" value={newCandidate.year} onChange={(e) => setNewCandidate({ ...newCandidate, year: e.target.value })} />
                 </div>
                 <div>
                   <Label className="text-card-foreground">Statement</Label>
-                  <Input className="mt-1" placeholder="Candidate statement" value={newCandidate.statement} onChange={e => setNewCandidate({ ...newCandidate, statement: e.target.value })} />
+                  <Input className="mt-1" placeholder="Candidate statement" value={newCandidate.statement} onChange={(e) => setNewCandidate({ ...newCandidate, statement: e.target.value })} />
                 </div>
               </div>
               <Button className="bg-gradient-navy text-primary-foreground font-semibold hover:opacity-90 gap-2">
@@ -165,14 +165,14 @@ const AdminDashboard = () => {
             <div className="mt-6 bg-card border border-border rounded-xl p-6 shadow-card">
               <h3 className="font-display font-semibold text-foreground mb-4">Current Candidates</h3>
               <div className="divide-y divide-border">
-                {candidates.map(c => (
-                    <div key={c.id} className="flex items-center justify-between py-3">
+                {candidates.map((c) =>
+                <div key={c.id} className="flex items-center justify-between py-3">
                     <div>
                       <p className="font-medium text-foreground">{c.name}</p>
                     </div>
                     <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">Remove</Button>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </TabsContent>
@@ -199,8 +199,8 @@ const AdminDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
-  );
+    </div>);
+
 };
 
 export default AdminDashboard;
