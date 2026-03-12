@@ -66,7 +66,7 @@ const VotePage = () => {
       <div className="flex-1 container mx-auto px-4 py-10 max-w-3xl">
         <div className="text-center mb-10">
           <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-2">Cast Your Vote</h1>
-          <p className="text-muted-foreground">Select your candidates below. You may choose up to 4 prefects.</p>
+          <p className="text-muted-foreground">Select your candidates below. You may choose up to 10 prefects.</p>
         </div>
 
         {/* Head Girl */}
