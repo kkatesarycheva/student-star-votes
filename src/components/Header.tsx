@@ -25,7 +25,7 @@ const Header = () => {
               ESK Prefects Election
 
             </h1>
-            <p className="text-primary-foreground/60 text-xs font-body">2026 Student Council</p>
+            
           </div>
         </Link>
 
