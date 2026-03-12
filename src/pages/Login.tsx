@@ -24,7 +24,9 @@ const Login = () => {
     }
     const success = login(email, password);
     if (success) {
-      navigate(email === "admin@school.com" ? "/admin" : "/candidates");
+      if (email === "admin@school.com") navigate("/admin");
+      else if (email === "it@school.com") navigate("/it-admin");
+      else navigate("/candidates");
     } else {
       setError("Invalid credentials. Try teacher@school.com / teacher123");
     }
