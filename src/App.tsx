@@ -10,6 +10,7 @@ import Candidates from "./pages/Candidates";
 import VotePage from "./pages/VotePage";
 import Confirmation from "./pages/Confirmation";
 import AdminDashboard from "./pages/AdminDashboard";
+import ITAdminDashboard from "./pages/ITAdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
