@@ -90,7 +90,8 @@ const Login = () => {
             <div className="mt-6 p-3 rounded-md bg-muted/50 border border-border">
               <p className="text-xs text-muted-foreground text-center">
                 <strong>Demo:</strong> teacher@school.com / teacher123<br />
-                <strong>Admin:</strong> admin@school.com / admin123
+                <strong>Admin:</strong> admin@school.com / admin123<br />
+                <strong>IT Admin:</strong> it@school.com / it123
               </p>
             </div>
           </div>

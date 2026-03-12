@@ -29,6 +29,7 @@ const App = () => (
             <Route path="/vote" element={<VotePage />} />
             <Route path="/confirmation" element={<Confirmation />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/it-admin" element={<ITAdminDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -4,6 +4,7 @@ import { VoteSelection } from "./mockData";
 interface ElectionContextType {
   isLoggedIn: boolean;
   isAdmin: boolean;
+  isITAdmin: boolean;
   teacherName: string;
   hasVoted: boolean;
   votingOpen: boolean;
@@ -26,6 +27,7 @@ export const useElection = () => {
 export const ElectionProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isITAdmin, setIsITAdmin] = useState(false);
   const [teacherName, setTeacherName] = useState("");
   const [hasVoted, setHasVoted] = useState(false);
   const [votingOpen, setVotingOpen] = useState(true);
@@ -39,12 +41,21 @@ export const ElectionProvider = ({ children }: { children: ReactNode }) => {
     if (email === "admin@school.com" && password === "admin123") {
       setIsLoggedIn(true);
       setIsAdmin(true);
+      setIsITAdmin(false);
       setTeacherName("Admin");
+      return true;
+    }
+    if (email === "it@school.com" && password === "it123") {
+      setIsLoggedIn(true);
+      setIsAdmin(false);
+      setIsITAdmin(true);
+      setTeacherName("IT Administrator");
       return true;
     }
     if (email && password === "teacher123") {
       setIsLoggedIn(true);
       setIsAdmin(false);
+      setIsITAdmin(false);
       setTeacherName(email.split("@")[0].replace(/\./g, " ").replace(/\b\w/g, l => l.toUpperCase()));
       return true;
     }
@@ -54,6 +65,7 @@ export const ElectionProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setIsLoggedIn(false);
     setIsAdmin(false);
+    setIsITAdmin(false);
     setTeacherName("");
   };
 
@@ -64,7 +76,7 @@ export const ElectionProvider = ({ children }: { children: ReactNode }) => {
   const toggleVoting = () => setVotingOpen(prev => !prev);
 
   return (
-    <ElectionContext.Provider value={{ isLoggedIn, isAdmin, teacherName, hasVoted, votingOpen, votes, login, logout, setVotes, submitVote, toggleVoting }}>
+    <ElectionContext.Provider value={{ isLoggedIn, isAdmin, isITAdmin, teacherName, hasVoted, votingOpen, votes, login, logout, setVotes, submitVote, toggleVoting }}>
       {children}
     </ElectionContext.Provider>
   );
