@@ -5,8 +5,6 @@ import eskBg from "@/assets/esk-bg.jpg";
 import Header from "@/components/Header";
 
 const timelineSteps = [
-{ icon: Users, label: "Nominations Open", date: "1st March", done: true },
-{ icon: CalendarDays, label: "Campaigning Week", date: "3rd – 7th March", done: true },
 { icon: Vote, label: "Voting Period", date: "8th – 12th March", done: false, active: true },
 { icon: CheckCircle, label: "Results Announced", date: "14th March", done: false }];
 
