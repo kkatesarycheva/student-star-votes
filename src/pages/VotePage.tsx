@@ -18,14 +18,14 @@ const VotePage = () => {
   const navigate = useNavigate();
 
   const filterCandidates = (search: string) =>
-    candidates.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
+  candidates.filter((c) => c.name.toLowerCase().includes(search.toLowerCase()));
 
   const selectHeadgirl = (id: string) => setVotes({ ...votes, headgirl: votes.headgirl === id ? null : id });
   const selectHeadboy = (id: string) => setVotes({ ...votes, headboy: votes.headboy === id ? null : id });
   const togglePrefect = (id: string) => {
     const current = votes.prefects;
     if (current.includes(id)) {
-      setVotes({ ...votes, prefects: current.filter(p => p !== id) });
+      setVotes({ ...votes, prefects: current.filter((p) => p !== id) });
     } else if (current.length < 10) {
       setVotes({ ...votes, prefects: [...current, id] });
     }
@@ -33,9 +33,9 @@ const VotePage = () => {
 
   const canSubmit = votes.headgirl && votes.headboy && votes.prefects.length > 0;
 
-  const selectedHeadgirl = candidates.find(c => c.id === votes.headgirl);
-  const selectedHeadboy = candidates.find(c => c.id === votes.headboy);
-  const selectedPrefects = candidates.filter(c => votes.prefects.includes(c.id));
+  const selectedHeadgirl = candidates.find((c) => c.id === votes.headgirl);
+  const selectedHeadboy = candidates.find((c) => c.id === votes.headboy);
+  const selectedPrefects = candidates.filter((c) => votes.prefects.includes(c.id));
 
   const handleConfirmSubmit = () => {
     submitVote();
@@ -53,12 +53,12 @@ const VotePage = () => {
     return null;
   }
 
-  const SearchInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) => (
-    <div className="relative mb-3">
+  const SearchInput = ({ value, onChange, placeholder }: {value: string;onChange: (v: string) => void;placeholder: string;}) =>
+  <div className="relative mb-3">
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-      <Input className="pl-9" placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)} />
-    </div>
-  );
+      <Input className="pl-9" placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} />
+    </div>;
+
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -72,66 +72,66 @@ const VotePage = () => {
         {/* Head Girl */}
         <section className="mb-10">
           <h2 className="text-xl font-display font-bold text-foreground mb-4 flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-sm">👑</span>
+            <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-primary-foreground">​🎓</span>
             Head Girl <span className="text-sm font-body font-normal text-muted-foreground">(select one)</span>
           </h2>
           <SearchInput value={searchHG} onChange={setSearchHG} placeholder="Search candidates..." />
           <div className="space-y-2 max-h-80 overflow-y-auto">
-            {filterCandidates(searchHG).map(c => (
-              <CandidateCard key={c.id} candidate={c} selected={votes.headgirl === c.id} onSelect={() => selectHeadgirl(c.id)} selectable />
-            ))}
+            {filterCandidates(searchHG).map((c) =>
+            <CandidateCard key={c.id} candidate={c} selected={votes.headgirl === c.id} onSelect={() => selectHeadgirl(c.id)} selectable />
+            )}
           </div>
         </section>
 
         {/* Head Boy */}
         <section className="mb-10">
           <h2 className="text-xl font-display font-bold text-foreground mb-4 flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-sm">🎓</span>
+            <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-primary-foreground">🎓</span>
             Head Boy <span className="text-sm font-body font-normal text-muted-foreground">(select one)</span>
           </h2>
           <SearchInput value={searchHB} onChange={setSearchHB} placeholder="Search candidates..." />
           <div className="space-y-2 max-h-80 overflow-y-auto">
-            {filterCandidates(searchHB).map(c => (
-              <CandidateCard key={c.id} candidate={c} selected={votes.headboy === c.id} onSelect={() => selectHeadboy(c.id)} selectable />
-            ))}
+            {filterCandidates(searchHB).map((c) =>
+            <CandidateCard key={c.id} candidate={c} selected={votes.headboy === c.id} onSelect={() => selectHeadboy(c.id)} selectable />
+            )}
           </div>
         </section>
 
         {/* Prefects */}
         <section className="mb-10">
           <h2 className="text-xl font-display font-bold text-foreground mb-4 flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-sm">⭐</span>
+            <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-primary-foreground">⭐</span>
             Prefects <span className="text-sm font-body font-normal text-muted-foreground">(select up to 10) — {votes.prefects.length}/10 selected</span>
           </h2>
           <SearchInput value={searchPrefect} onChange={setSearchPrefect} placeholder="Search candidates..." />
           <div className="space-y-2 max-h-80 overflow-y-auto">
-            {filterCandidates(searchPrefect).map(c => (
-              <CandidateCard key={c.id} candidate={c} selected={votes.prefects.includes(c.id)} onSelect={() => togglePrefect(c.id)} selectable />
-            ))}
+            {filterCandidates(searchPrefect).map((c) =>
+            <CandidateCard key={c.id} candidate={c} selected={votes.prefects.includes(c.id)} onSelect={() => togglePrefect(c.id)} selectable />
+            )}
           </div>
         </section>
 
         {/* Submit */}
         <div className="sticky bottom-4 bg-card border border-border rounded-xl p-4 shadow-elevated flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
-            {!canSubmit && (
-              <span className="flex items-center gap-1.5">
+            {!canSubmit &&
+            <span className="flex items-center gap-1.5">
                 <AlertTriangle className="w-4 h-4 text-accent" />
                 Select at least one candidate per category
               </span>
-            )}
-            {canSubmit && (
-              <span className="flex items-center gap-1.5 text-success">
+            }
+            {canSubmit &&
+            <span className="flex items-center gap-1.5 text-success">
                 <CheckCircle className="w-4 h-4" />
                 Ready to submit
               </span>
-            )}
+            }
           </div>
           <Button
             disabled={!canSubmit}
             onClick={() => setShowConfirm(true)}
-            className="bg-gradient-gold text-secondary-foreground font-semibold hover:opacity-90 shadow-gold"
-          >
+            className="bg-gradient-gold text-secondary-foreground font-semibold hover:opacity-90 shadow-gold">
+            
             <Vote className="w-4 h-4 mr-2" />
             Review & Submit
           </Button>
@@ -157,7 +157,7 @@ const VotePage = () => {
             <div>
               <p className="text-sm font-semibold text-foreground mb-1">Prefects</p>
               <ul className="text-sm text-muted-foreground list-disc list-inside">
-                {selectedPrefects.map(p => <li key={p.id}>{p.name}</li>)}
+                {selectedPrefects.map((p) => <li key={p.id}>{p.name}</li>)}
               </ul>
             </div>
           </div>
@@ -169,8 +169,8 @@ const VotePage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>);
+
 };
 
 export default VotePage;
