@@ -26,7 +26,7 @@ const VotePage = () => {
     const current = votes.prefects;
     if (current.includes(id)) {
       setVotes({ ...votes, prefects: current.filter(p => p !== id) });
-    } else if (current.length < 4) {
+    } else if (current.length < 10) {
       setVotes({ ...votes, prefects: [...current, id] });
     }
   };
@@ -101,7 +101,7 @@ const VotePage = () => {
         <section className="mb-10">
           <h2 className="text-xl font-display font-bold text-foreground mb-4 flex items-center gap-2">
             <span className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-sm">⭐</span>
-            Prefects <span className="text-sm font-body font-normal text-muted-foreground">(select up to 4) — {votes.prefects.length}/4 selected</span>
+            Prefects <span className="text-sm font-body font-normal text-muted-foreground">(select up to 10) — {votes.prefects.length}/10 selected</span>
           </h2>
           <SearchInput value={searchPrefect} onChange={setSearchPrefect} placeholder="Search candidates..." />
           <div className="space-y-2 max-h-80 overflow-y-auto">
