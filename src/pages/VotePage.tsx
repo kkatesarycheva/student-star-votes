@@ -26,7 +26,7 @@ const VotePage = () => {
     const current = votes.prefects;
     if (current.includes(id)) {
       setVotes({ ...votes, prefects: current.filter(p => p !== id) });
-    } else if (current.length < 4) {
+    } else if (current.length < 10) {
       setVotes({ ...votes, prefects: [...current, id] });
     }
   };
