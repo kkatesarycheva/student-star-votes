@@ -1,18 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { useElection } from "@/lib/electionContext";
-import { candidates } from "@/lib/mockData";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Confirmation = () => {
-  const { isLoggedIn, hasVoted, votes } = useElection();
+  const { isLoggedIn, hasVoted, votes, candidates } = useElection();
   const navigate = useNavigate();
 
-  const selectedHeadgirl = candidates.find(c => c.id === votes.headgirl);
-  const selectedHeadboy = candidates.find(c => c.id === votes.headboy);
-  const selectedPrefects = candidates.filter(c => votes.prefects.includes(c.id));
+  const selectedHeadgirl = candidates.find((c) => c.id === votes.headgirl);
+  const selectedHeadboy = candidates.find((c) => c.id === votes.headboy);
+  const selectedPrefects = candidates.filter((c) => votes.prefects.includes(c.id));
 
   if (!isLoggedIn) { navigate("/login"); return null; }
   if (!hasVoted) { navigate("/vote"); return null; }
@@ -41,7 +40,7 @@ const Confirmation = () => {
               </div>
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Prefects</p>
-                {selectedPrefects.map(p => (
+                {selectedPrefects.map((p) => (
                   <p key={p.id} className="text-foreground font-medium">• {p.name}</p>
                 ))}
               </div>
