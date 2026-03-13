@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useElection } from "@/lib/electionContext";
-import { candidates } from "@/lib/mockData";
 import CandidateCard from "@/components/CandidateCard";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Vote, AlertTriangle, CheckCircle, Search } from "lucide-react";
+import { Vote, AlertTriangle, CheckCircle, Search, Ban } from "lucide-react";
 
 const VotePage = () => {
-  const { isLoggedIn, hasVoted, votingOpen, votes, setVotes, submitVote } = useElection();
+  const { isLoggedIn, hasVoted, votingOpen, votes, setVotes, submitVote, candidates } = useElection();
   const [showConfirm, setShowConfirm] = useState(false);
   const [searchHG, setSearchHG] = useState("");
   const [searchHB, setSearchHB] = useState("");
@@ -18,7 +17,7 @@ const VotePage = () => {
   const navigate = useNavigate();
 
   const filterCandidates = (search: string) =>
-  candidates.filter((c) => c.name.toLowerCase().includes(search.toLowerCase()));
+    candidates.filter((c) => c.name.toLowerCase().includes(search.toLowerCase()));
 
   const selectHeadgirl = (id: string) => setVotes({ ...votes, headgirl: votes.headgirl === id ? null : id });
   const selectHeadboy = (id: string) => setVotes({ ...votes, headboy: votes.headboy === id ? null : id });
@@ -43,22 +42,32 @@ const VotePage = () => {
     navigate("/confirmation");
   };
 
-  if (!isLoggedIn) {
-    navigate("/login");
-    return null;
+  if (!isLoggedIn) { navigate("/login"); return null; }
+  if (hasVoted) { navigate("/confirmation"); return null; }
+
+  if (!votingOpen) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <div className="flex-1 flex items-center justify-center px-4 py-12">
+          <div className="max-w-md w-full text-center">
+            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+              <Ban className="w-10 h-10 text-muted-foreground" />
+            </div>
+            <h1 className="text-3xl font-display font-bold text-foreground mb-2">Voting is Closed</h1>
+            <p className="text-muted-foreground">The voting period has ended or has not started yet. Please check back later.</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  if (hasVoted) {
-    navigate("/confirmation");
-    return null;
-  }
-
-  const SearchInput = ({ value, onChange, placeholder }: {value: string;onChange: (v: string) => void;placeholder: string;}) =>
-  <div className="relative mb-3">
+  const SearchInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) => (
+    <div className="relative mb-3">
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
       <Input className="pl-9" placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} />
-    </div>;
-
+    </div>
+  );
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -77,9 +86,9 @@ const VotePage = () => {
           </h2>
           <SearchInput value={searchHG} onChange={setSearchHG} placeholder="Search candidates..." />
           <div className="space-y-2 max-h-80 overflow-y-auto">
-            {filterCandidates(searchHG).map((c) =>
-            <CandidateCard key={c.id} candidate={c} selected={votes.headgirl === c.id} onSelect={() => selectHeadgirl(c.id)} selectable />
-            )}
+            {filterCandidates(searchHG).map((c) => (
+              <CandidateCard key={c.id} candidate={c} selected={votes.headgirl === c.id} onSelect={() => selectHeadgirl(c.id)} selectable />
+            ))}
           </div>
         </section>
 
@@ -91,9 +100,9 @@ const VotePage = () => {
           </h2>
           <SearchInput value={searchHB} onChange={setSearchHB} placeholder="Search candidates..." />
           <div className="space-y-2 max-h-80 overflow-y-auto">
-            {filterCandidates(searchHB).map((c) =>
-            <CandidateCard key={c.id} candidate={c} selected={votes.headboy === c.id} onSelect={() => selectHeadboy(c.id)} selectable />
-            )}
+            {filterCandidates(searchHB).map((c) => (
+              <CandidateCard key={c.id} candidate={c} selected={votes.headboy === c.id} onSelect={() => selectHeadboy(c.id)} selectable />
+            ))}
           </div>
         </section>
 
@@ -105,33 +114,33 @@ const VotePage = () => {
           </h2>
           <SearchInput value={searchPrefect} onChange={setSearchPrefect} placeholder="Search candidates..." />
           <div className="space-y-2 max-h-80 overflow-y-auto">
-            {filterCandidates(searchPrefect).map((c) =>
-            <CandidateCard key={c.id} candidate={c} selected={votes.prefects.includes(c.id)} onSelect={() => togglePrefect(c.id)} selectable />
-            )}
+            {filterCandidates(searchPrefect).map((c) => (
+              <CandidateCard key={c.id} candidate={c} selected={votes.prefects.includes(c.id)} onSelect={() => togglePrefect(c.id)} selectable />
+            ))}
           </div>
         </section>
 
         {/* Submit */}
         <div className="sticky bottom-4 bg-card border border-border rounded-xl p-4 shadow-elevated flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
-            {!canSubmit &&
-            <span className="flex items-center gap-1.5">
+            {!canSubmit && (
+              <span className="flex items-center gap-1.5">
                 <AlertTriangle className="w-4 h-4 text-accent" />
                 Select at least one candidate per category
               </span>
-            }
-            {canSubmit &&
-            <span className="flex items-center gap-1.5 text-success">
+            )}
+            {canSubmit && (
+              <span className="flex items-center gap-1.5 text-success">
                 <CheckCircle className="w-4 h-4" />
                 Ready to submit
               </span>
-            }
+            )}
           </div>
           <Button
             disabled={!canSubmit}
             onClick={() => setShowConfirm(true)}
-            className="bg-gradient-gold text-secondary-foreground font-semibold hover:opacity-90 shadow-gold">
-            
+            className="bg-gradient-gold text-secondary-foreground font-semibold hover:opacity-90 shadow-gold"
+          >
             <Vote className="w-4 h-4 mr-2" />
             Review & Submit
           </Button>
@@ -169,8 +178,8 @@ const VotePage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>);
-
+    </div>
+  );
 };
 
 export default VotePage;

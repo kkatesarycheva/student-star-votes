@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { candidates } from "@/lib/mockData";
+import { useElection } from "@/lib/electionContext";
 import CandidateCard from "@/components/CandidateCard";
 import Header from "@/components/Header";
 import { Input } from "@/components/ui/input";
 import { Search, Users } from "lucide-react";
 
 const Candidates = () => {
+  const { candidates } = useElection();
   const [search, setSearch] = useState("");
 
-  const filtered = candidates.filter(c =>
+  const filtered = candidates.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -23,7 +24,7 @@ const Candidates = () => {
 
         <div className="relative mb-6">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input className="pl-9" placeholder="Search candidates..." value={search} onChange={e => setSearch(e.target.value)} />
+          <Input className="pl-9" placeholder="Search candidates..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
 
         <p className="text-sm text-muted-foreground mb-4 flex items-center gap-1.5">
@@ -32,7 +33,7 @@ const Candidates = () => {
         </p>
 
         <div className="space-y-2">
-          {filtered.map(c => (
+          {filtered.map((c) => (
             <CandidateCard key={c.id} candidate={c} />
           ))}
         </div>

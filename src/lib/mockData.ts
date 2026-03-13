@@ -95,9 +95,3 @@ export const candidates: Candidate[] = [
   { id: "1331", name: "Ayda Vehbi", photo: "", year: "" },
   { id: "6725", name: "Eylül Yılmaz", photo: "", year: "" },
 ];
-
-export const mockResults = {
-  headgirl: [] as { name: string; votes: number }[],
-  headboy: [] as { name: string; votes: number }[],
-  prefects: [] as { name: string; votes: number }[],
-};
