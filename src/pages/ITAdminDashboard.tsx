@@ -11,8 +11,15 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   Upload, FileSpreadsheet, Image, Users, PlusCircle, Trash2, Search,
-  FolderUp, CheckCircle, AlertCircle, X,
+  FolderUp, CheckCircle, AlertCircle, X, Eye, Loader2,
 } from "lucide-react";
+
+interface ParsedCandidate {
+  name: string;
+  year: string;
+}
+
+const API_BASE = "http://localhost:3001";
 
 const ITAdminDashboard = () => {
   const { isLoggedIn, isITAdmin, candidates, addCandidate, removeCandidate } = useElection();
@@ -24,6 +31,13 @@ const ITAdminDashboard = () => {
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [uploadStatus, setUploadStatus] = useState<"idle" | "success" | "error">("idle");
   const [photoUploadStatus, setPhotoUploadStatus] = useState<"idle" | "success" | "error">("idle");
+
+  // Excel parsing state
+  const [parsedCandidates, setParsedCandidates] = useState<ParsedCandidate[]>([]);
+  const [isParsing, setIsParsing] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importYear, setImportYear] = useState("Year 12");
+  const [showPreview, setShowPreview] = useState(false);
 
   const xlsxInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -60,16 +74,119 @@ const ITAdminDashboard = () => {
       if (validTypes.includes(file.type) || file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
         setXlsxFile(file);
         setUploadStatus("idle");
+        setParsedCandidates([]);
+        setShowPreview(false);
       }
     }
   };
 
-  const handleXlsxUpload = () => {
+  const handleParseXlsx = async () => {
     if (!xlsxFile) return;
-    setTimeout(() => {
+    setIsParsing(true);
+    
+    try {
+      const token = localStorage.getItem("auth_token");
+      const formData = new FormData();
+      formData.append("file", xlsxFile);
+
+      const res = await fetch(`${API_BASE}/api/candidates/parse-xlsx`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to parse file");
+      }
+
+      const data = await res.json();
+      setParsedCandidates(data.candidates);
+      setShowPreview(true);
+      toast.success(`Extracted ${data.extracted} candidates from ${data.total} rows`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to parse Excel file");
+      // Fallback: parse locally in the browser
+      handleParseLocally();
+    } finally {
+      setIsParsing(false);
+    }
+  };
+
+  const handleParseLocally = async () => {
+    if (!xlsxFile) return;
+    try {
+      const XLSX = await import("xlsx");
+      const buffer = await xlsxFile.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows: any[] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+      const extracted: ParsedCandidate[] = rows
+        .map((row) => {
+          const firstName = (row["Pupil 1st name"] || row["Pupil 1st Name"] || "").toString().trim();
+          const surname = (row["Pupil surname"] || row["Pupil Surname"] || "").toString().trim();
+          if (!firstName && !surname) return null;
+          return { name: `${firstName} ${surname}`.trim(), year: "" };
+        })
+        .filter(Boolean) as ParsedCandidate[];
+
+      setParsedCandidates(extracted);
+      setShowPreview(true);
+      toast.success(`Extracted ${extracted.length} candidates locally`);
+    } catch {
+      toast.error("Failed to parse file locally");
+    }
+  };
+
+  const handleConfirmImport = async () => {
+    if (parsedCandidates.length === 0) return;
+    setIsImporting(true);
+
+    try {
+      const token = localStorage.getItem("auth_token");
+      const res = await fetch(`${API_BASE}/api/candidates/import`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ candidates: parsedCandidates, year: importYear }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Import failed");
+      }
+
+      const data = await res.json();
+      // Also add to local context
+      data.imported.forEach((c: any) => {
+        addCandidate({ id: String(c.id), name: c.name, photo: "", year: c.year });
+      });
+
+      toast.success(`Successfully imported ${data.count} candidates!`);
       setUploadStatus("success");
-      toast.success("File uploaded successfully! (Demo — no actual import without backend)");
-    }, 1000);
+      setParsedCandidates([]);
+      setShowPreview(false);
+      setXlsxFile(null);
+    } catch (err: any) {
+      // Fallback: add locally
+      parsedCandidates.forEach((c, i) => {
+        addCandidate({ id: `xlsx-${Date.now()}-${i}`, name: c.name, photo: "", year: importYear });
+      });
+      toast.success(`Imported ${parsedCandidates.length} candidates locally`);
+      setUploadStatus("success");
+      setParsedCandidates([]);
+      setShowPreview(false);
+      setXlsxFile(null);
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const handleRemoveParsed = (index: number) => {
+    setParsedCandidates((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -193,12 +310,20 @@ const ITAdminDashboard = () => {
               <div>
                 <h3 className="font-display font-semibold text-foreground mb-1 flex items-center gap-2">
                   <Upload className="w-5 h-5 text-accent" />
-                  Upload Candidate List (.xlsx)
+                  Upload Student List (.xlsx)
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Upload an Excel file matching the school register format. Columns should include: Student ID, Full Name, Year Group.
+                  Upload the Excel file exactly as exported from the school system. The system will automatically extract <strong>Pupil 1st name</strong> and <strong>Pupil surname</strong> columns and combine them into candidate names.
                 </p>
               </div>
+
+              {/* Year group input */}
+              <div className="max-w-xs">
+                <Label className="text-card-foreground">Year Group for Import</Label>
+                <Input className="mt-1" placeholder="e.g. Year 12" value={importYear} onChange={(e) => setImportYear(e.target.value)} />
+              </div>
+
+              {/* Drop zone */}
               <div
                 className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-accent/50 hover:bg-accent/5 transition-colors"
                 onClick={() => xlsxInputRef.current?.click()}
@@ -213,24 +338,85 @@ const ITAdminDashboard = () => {
                 ) : (
                   <div className="space-y-1">
                     <p className="text-foreground font-medium">Click to select an Excel file</p>
-                    <p className="text-sm text-muted-foreground">Supports .xlsx and .xls formats</p>
+                    <p className="text-sm text-muted-foreground">Supports .xlsx and .xls formats from the school system</p>
                   </div>
                 )}
               </div>
-              {xlsxFile && (
+
+              {/* Action buttons */}
+              {xlsxFile && !showPreview && (
                 <div className="flex items-center gap-3">
-                  <Button onClick={handleXlsxUpload} className="bg-gradient-gold text-secondary-foreground font-semibold hover:opacity-90 gap-2">
-                    <Upload className="w-4 h-4" />Upload &amp; Import
+                  <Button onClick={handleParseXlsx} disabled={isParsing} className="bg-gradient-navy text-primary-foreground font-semibold hover:opacity-90 gap-2">
+                    {isParsing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
+                    {isParsing ? "Reading file..." : "Preview Candidates"}
                   </Button>
-                  <Button variant="ghost" onClick={() => { setXlsxFile(null); setUploadStatus("idle"); }}>
+                  <Button variant="ghost" onClick={() => { setXlsxFile(null); setUploadStatus("idle"); setParsedCandidates([]); setShowPreview(false); }}>
                     <X className="w-4 h-4 mr-1" />Clear
                   </Button>
                 </div>
               )}
+
+              {/* Preview table */}
+              {showPreview && parsedCandidates.length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-display font-semibold text-foreground flex items-center gap-2">
+                      <Eye className="w-4 h-4 text-accent" />
+                      Preview: {parsedCandidates.length} candidates extracted
+                    </h4>
+                    <Badge variant="outline" className="text-muted-foreground">{importYear}</Badge>
+                  </div>
+
+                  <div className="border border-border rounded-lg overflow-hidden max-h-80 overflow-y-auto">
+                    <table className="w-full text-sm">
+                      <thead className="bg-muted/50 sticky top-0">
+                        <tr>
+                          <th className="text-left px-4 py-2 font-medium text-muted-foreground">#</th>
+                          <th className="text-left px-4 py-2 font-medium text-muted-foreground">Name</th>
+                          <th className="text-left px-4 py-2 font-medium text-muted-foreground">Year</th>
+                          <th className="text-right px-4 py-2 font-medium text-muted-foreground">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {parsedCandidates.map((c, i) => (
+                          <tr key={i} className="hover:bg-muted/30">
+                            <td className="px-4 py-2 text-muted-foreground">{i + 1}</td>
+                            <td className="px-4 py-2 text-foreground font-medium">{c.name}</td>
+                            <td className="px-4 py-2 text-muted-foreground">{importYear}</td>
+                            <td className="px-4 py-2 text-right">
+                              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive h-7 w-7 p-0" onClick={() => handleRemoveParsed(i)}>
+                                <X className="w-3 h-3" />
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Button onClick={handleConfirmImport} disabled={isImporting} className="bg-gradient-gold text-secondary-foreground font-semibold hover:opacity-90 gap-2">
+                      {isImporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                      {isImporting ? "Importing..." : `Confirm Import (${parsedCandidates.length})`}
+                    </Button>
+                    <Button variant="ghost" onClick={() => { setShowPreview(false); setParsedCandidates([]); setXlsxFile(null); }}>
+                      <X className="w-4 h-4 mr-1" />Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {showPreview && parsedCandidates.length === 0 && (
+                <div className="flex items-center gap-2 text-destructive bg-destructive/10 rounded-md px-4 py-2">
+                  <AlertCircle className="w-4 h-4" />
+                  <span className="text-sm font-medium">No candidates found. Ensure the file has "Pupil 1st name" and "Pupil surname" columns.</span>
+                </div>
+              )}
+
               {uploadStatus === "success" && (
                 <div className="flex items-center gap-2 text-success bg-success/10 rounded-md px-4 py-2">
                   <CheckCircle className="w-4 h-4" />
-                  <span className="text-sm font-medium">File uploaded successfully! (Enable Lovable Cloud for actual import)</span>
+                  <span className="text-sm font-medium">Candidates imported successfully!</span>
                 </div>
               )}
             </div>
@@ -282,7 +468,7 @@ const ITAdminDashboard = () => {
               {photoUploadStatus === "success" && (
                 <div className="flex items-center gap-2 text-success bg-success/10 rounded-md px-4 py-2">
                   <CheckCircle className="w-4 h-4" />
-                  <span className="text-sm font-medium">{photoFiles.length} photo(s) uploaded! (Enable Lovable Cloud for actual storage)</span>
+                  <span className="text-sm font-medium">{photoFiles.length} photo(s) uploaded! (Demo — no actual storage without backend)</span>
                 </div>
               )}
             </div>
