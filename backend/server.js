@@ -225,6 +225,58 @@ app.delete("/api/teachers/:id", authenticate, requireRole("admin", "it_admin"), 
   res.json({ success: true });
 });
 
+// ─── POST /api/candidates/parse-xlsx ─────────────────────────────
+app.post("/api/candidates/parse-xlsx", authenticate, requireRole("admin", "it_admin"), upload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+  try {
+    const workbook = XLSX.read(req.file.buffer, { type: "buffer" });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+    const candidates = rows
+      .map((row) => {
+        const firstName = (row["Pupil 1st name"] || row["Pupil 1st Name"] || "").toString().trim();
+        const surname = (row["Pupil surname"] || row["Pupil Surname"] || "").toString().trim();
+        if (!firstName && !surname) return null;
+        return { name: `${firstName} ${surname}`.trim(), year: "" };
+      })
+      .filter(Boolean);
+
+    res.json({ candidates, total: rows.length, extracted: candidates.length });
+  } catch (err) {
+    res.status(400).json({ error: "Failed to parse Excel file: " + err.message });
+  }
+});
+
+// ─── POST /api/candidates/import ─────────────────────────────────
+app.post("/api/candidates/import", authenticate, requireRole("admin", "it_admin"), (req, res) => {
+  const { candidates, year } = req.body;
+  if (!Array.isArray(candidates) || candidates.length === 0) {
+    return res.status(400).json({ error: "No candidates provided" });
+  }
+
+  const election = db.prepare("SELECT id FROM elections WHERE status = 'open' ORDER BY id DESC LIMIT 1").get();
+  if (!election) return res.status(400).json({ error: "No open election" });
+
+  const insert = db.prepare("INSERT INTO candidates (name, photo, year, election_id) VALUES (?, '', ?, ?)");
+  const importAll = db.transaction(() => {
+    const imported = [];
+    for (const c of candidates) {
+      const result = insert.run(c.name, year || c.year || "", election.id);
+      imported.push({ id: result.lastInsertRowid, name: c.name, year: year || c.year || "" });
+    }
+    return imported;
+  });
+
+  try {
+    const imported = importAll();
+    res.json({ success: true, imported, count: imported.length });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Voting server running on http://localhost:${PORT}`);
 });
