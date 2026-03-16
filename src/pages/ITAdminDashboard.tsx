@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 interface ParsedCandidate {
+  id: string;
   name: string;
   year: string;
 }
@@ -124,10 +125,11 @@ const ITAdminDashboard = () => {
 
       const extracted: ParsedCandidate[] = rows
         .map((row) => {
-          const firstName = (row["Pupil 1st name"] || row["Pupil 1st Name"] || "").toString().trim();
-          const surname = (row["Pupil surname"] || row["Pupil Surname"] || "").toString().trim();
+          const firstName = (row[\"Pupil 1st name\"] || row[\"Pupil 1st Name\"] || \"\").toString().trim();
+          const surname = (row[\"Pupil surname\"] || row[\"Pupil Surname\"] || \"\").toString().trim();
+          const id = (row[\"ID\"] || row[\"Id\"] || row[\"id\"] || row[\"Roll Number\"] || row[\"Roll No\"] || row[\"Student ID\"] || row[\"Pupil ID\"] || \"\").toString().trim();
           if (!firstName && !surname) return null;
-          return { name: `${firstName} ${surname}`.trim(), year: "" };
+          return { id, name: `${firstName} ${surname}`.trim(), year: \"\" };
         })
         .filter(Boolean) as ParsedCandidate[];
 
@@ -173,7 +175,8 @@ const ITAdminDashboard = () => {
     } catch (err: any) {
       // Fallback: add locally
       parsedCandidates.forEach((c, i) => {
-        addCandidate({ id: `xlsx-${Date.now()}-${i}`, name: c.name, photo: "", year: importYear });
+        const candidateId = c.id || `xlsx-${Date.now()}-${i}`;
+        addCandidate({ id: candidateId, name: c.name, photo: \"\", year: importYear });
       });
       toast.success(`Imported ${parsedCandidates.length} candidates locally`);
       setUploadStatus("success");
@@ -369,23 +372,25 @@ const ITAdminDashboard = () => {
 
                   <div className="border border-border rounded-lg overflow-hidden max-h-80 overflow-y-auto">
                     <table className="w-full text-sm">
-                      <thead className="bg-muted/50 sticky top-0">
+                      <thead className=\"bg-muted/50 sticky top-0\">
                         <tr>
-                          <th className="text-left px-4 py-2 font-medium text-muted-foreground">#</th>
-                          <th className="text-left px-4 py-2 font-medium text-muted-foreground">Name</th>
-                          <th className="text-left px-4 py-2 font-medium text-muted-foreground">Year</th>
-                          <th className="text-right px-4 py-2 font-medium text-muted-foreground">Action</th>
+                          <th className=\"text-left px-4 py-2 font-medium text-muted-foreground\">#</th>
+                          <th className=\"text-left px-4 py-2 font-medium text-muted-foreground\">ID</th>
+                          <th className=\"text-left px-4 py-2 font-medium text-muted-foreground\">Name</th>
+                          <th className=\"text-left px-4 py-2 font-medium text-muted-foreground\">Year</th>
+                          <th className=\"text-right px-4 py-2 font-medium text-muted-foreground\">Action</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-border">
+                      <tbody className=\"divide-y divide-border\">
                         {parsedCandidates.map((c, i) => (
-                          <tr key={i} className="hover:bg-muted/30">
-                            <td className="px-4 py-2 text-muted-foreground">{i + 1}</td>
-                            <td className="px-4 py-2 text-foreground font-medium">{c.name}</td>
-                            <td className="px-4 py-2 text-muted-foreground">{importYear}</td>
-                            <td className="px-4 py-2 text-right">
-                              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive h-7 w-7 p-0" onClick={() => handleRemoveParsed(i)}>
-                                <X className="w-3 h-3" />
+                          <tr key={i} className=\"hover:bg-muted/30\">
+                            <td className=\"px-4 py-2 text-muted-foreground\">{i + 1}</td>
+                            <td className=\"px-4 py-2 text-muted-foreground\">{c.id || \"-\"}</td>
+                            <td className=\"px-4 py-2 text-foreground font-medium\">{c.name}</td>
+                            <td className=\"px-4 py-2 text-muted-foreground\">{importYear}</td>
+                            <td className=\"px-4 py-2 text-right\">
+                              <Button variant=\"ghost\" size=\"sm\" className=\"text-destructive hover:text-destructive h-7 w-7 p-0\" onClick={() => handleRemoveParsed(i)}>
+                                <X className=\"w-3 h-3\" />
                               </Button>
                             </td>
                           </tr>
